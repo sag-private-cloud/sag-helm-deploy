@@ -16,6 +16,9 @@ inputs:
   docker-password:
     required: true
     description: ""
+  extra-args:
+    required: false
+    description: ""
 
 runs:
   using: "composite"
