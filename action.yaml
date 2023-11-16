@@ -20,10 +20,9 @@ inputs:
 runs:
   using: "composite"
   steps:
-
     - name: Helm deploy
       shell: bash
       run: |
           kubectl create secret docker-registry regcred --docker-server=${{ inputs.docker-registry }} --docker-username=${{ inputs.docker-username }} --docker-password=${{ inputs.docker-password }} || true
           helm upgrade ${{ inputs.release-name }} --install ${{ inputs.helm-chart }} ${{ inputs.extra-args }}
-          helm get ${{ inputs.release-name }} >> $GITHUB_STEP_SUMMARY
+          helm list --filter '${{ inputs.release-name }}' >> $GITHUB_STEP_SUMMARY
