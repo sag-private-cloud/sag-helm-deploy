@@ -3,22 +3,29 @@ name: "SAG Helm deploy action"
 inputs:
   release-name:
     required: true
-    description: ""
+    description: "The name of the release to deploy"
   helm-chart:
     required: true
-    description: ""
+    description: "The name of the Helm chart to deploy"
   docker-registry:
-    required: true
-    description: ""
+    required: false
+    description: "The docker registry server for which a docker-registry Kubernetes secret will be created. If not provided, such secret will not be created"
+  docker-registry-secret-name:
+    required: false
+    default: "regcred"
+    description: "The docker registry secret name. Default is 'regcred'"
   docker-username:
-    required: true
-    description: ""
+    required: false
+    description: "The docker registry username"
   docker-password:
-    required: true
-    description: ""
+    required: false
+    description: "The docker registry password"
+  namespace:
+    required: false
+    description: "The namespace of the deployment"
   extra-args:
     required: false
-    description: ""
+    description: "Extra arguments to pass to the Helm command"
 
 runs:
   using: "composite"
@@ -26,6 +33,19 @@ runs:
     - name: Helm deploy
       shell: bash
       run: |
-          kubectl create secret docker-registry regcred --docker-server="${{ inputs.docker-registry }}" --docker-username="${{ inputs.docker-username }}" --docker-password="${{ inputs.docker-password }}" || true
-          helm upgrade ${{ inputs.release-name }} --install ${{ inputs.helm-chart }} ${{ inputs.extra-args }}
-          helm get notes ${{ inputs.release-name }} >> $GITHUB_STEP_SUMMARY
+          echo "Resolving arguments..."
+          namespaceKubectlArg=$(namespace='${{ inputs.namespace }}' && [ -z $namespace ] && echo '' || echo "--namespace=$namespace")
+          namespaceHelmArg=$(namespace='${{ inputs.namespace }}' && [ -z $namespace ] && echo '' || echo "--namespace $namespace")
+          
+          if [ ! -z "${{ inputs.docker-registry }}" ]; then
+            echo "Creating docker-registry secret..."
+            kubectl create secret docker-registry ${{ inputs.docker-registry-secret-name }} --docker-server="${{ inputs.docker-registry }}" --docker-username="${{ inputs.docker-username }}" --docker-password="${{ inputs.docker-password }}" $namespaceKubectlArg || true
+          fi 
+
+          echo "Deploying..."
+          helm upgrade ${{ inputs.release-name }} --install ${{ inputs.helm-chart }} $namespaceHelmArg ${{ inputs.extra-args }}
+
+          echo "Collecting release notes..."
+          helm get notes ${{ inputs.release-name }} $namespaceHelmArg >> $GITHUB_STEP_SUMMARY
+
+          echo "Done."
