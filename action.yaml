@@ -62,10 +62,10 @@ runs:
           if [ ! -z "$extraArgs" ]; then
             echo "|Extra args| ${extraArgs} |" >> $GITHUB_STEP_SUMMARY
           fi
-          echo ""
+          echo "" >> $GITHUB_STEP_SUMMARY
           releaseNotes=$(helm get notes ${{ inputs.release-name }} $namespaceHelmArg)
           if [ ! -z "$releaseNotes" ]; then
-            echo "📓 Release Notes"
+            echo "📓 Release Notes" >> $GITHUB_STEP_SUMMARY
             echo "${releaseNotes}" >> $GITHUB_STEP_SUMMARY
           fi
 
