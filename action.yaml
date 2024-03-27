@@ -1,4 +1,4 @@
-name: "SAG Helm deploy action"
+name: "webMethods Helm deploy action"
 
 inputs:
   release-name:
@@ -23,6 +23,9 @@ inputs:
   namespace:
     required: false
     description: "The namespace of the deployment"
+  values-file:
+    required: false
+    description: "Values file path to pass to the Helm command"
   extra-args:
     required: false
     description: "Extra arguments to pass to the Helm command"
@@ -36,6 +39,7 @@ runs:
           echo "Resolving arguments..."
           namespaceKubectlArg=$(namespace='${{ inputs.namespace }}' && [ -z $namespace ] && echo '' || echo "--namespace=$namespace")
           namespaceHelmArg=$(namespace='${{ inputs.namespace }}' && [ -z $namespace ] && echo '' || echo "--namespace $namespace")
+          valuesFileHelmArg=$(valuesFile='${{ inputs.values-file }}' && [ -z $valuesFile ] && echo '' || echo "-f $valuesFile")
           
           if [ ! -z "${{ inputs.docker-registry }}" ]; then
             echo "Creating docker-registry secret..."
@@ -43,7 +47,7 @@ runs:
           fi 
 
           echo "Deploying..."
-          helm upgrade ${{ inputs.release-name }} --install ${{ inputs.helm-chart }} $namespaceHelmArg ${{ inputs.extra-args }}
+          helm upgrade ${{ inputs.release-name }} --install ${{ inputs.helm-chart }} $namespaceHelmArg $valuesFileHelmArg ${{ inputs.extra-args }}
 
           echo "Collecting release notes..."
           helm get notes ${{ inputs.release-name }} $namespaceHelmArg >> $GITHUB_STEP_SUMMARY
