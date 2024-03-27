@@ -49,7 +49,20 @@ runs:
           echo "Deploying..."
           helm upgrade ${{ inputs.release-name }} --install ${{ inputs.helm-chart }} $namespaceHelmArg $valuesFileHelmArg ${{ inputs.extra-args }}
 
-          echo "Collecting release notes..."
+          echo "Including step summary..."
+          echo "|Name|Value|" >> $GITHUB_STEP_SUMMARY
+          echo "|:-:|:-:|" >> $GITHUB_STEP_SUMMARY
+          echo "|Helm chart|${{ inputs.helm-chart }}|" >> $GITHUB_STEP_SUMMARY
+          echo "|Release name|${{ inputs.release-name }}|" >> $GITHUB_STEP_SUMMARY
+          valuesFile=$(echo ${{ inputs.values-file }})
+          if [ ! -z "$valuesFile" ]; then
+            echo "|Values file|${valuesFile}|" >> $GITHUB_STEP_SUMMARY
+          fi
+          extraArgs=$(echo ${{ inputs.extra-args }})
+          if [ ! -z "$extraArgs" ]; then
+            echo "|Extra args|${extraArgs}|" >> $GITHUB_STEP_SUMMARY
+          fi  
+          echo "Release notes:" >> $GITHUB_STEP_SUMMARY
           helm get notes ${{ inputs.release-name }} $namespaceHelmArg >> $GITHUB_STEP_SUMMARY
 
           echo "Done."
