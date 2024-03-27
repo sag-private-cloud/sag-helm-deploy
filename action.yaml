@@ -56,15 +56,15 @@ runs:
           echo "|Release name|${{ inputs.release-name }}|" >> $GITHUB_STEP_SUMMARY
           valuesFile=$(echo ${{ inputs.values-file }})
           if [ ! -z "$valuesFile" ]; then
-            echo "|Values file| `${valuesFile}` |" >> $GITHUB_STEP_SUMMARY
+            echo "|Values file| \`${valuesFile}\` |" >> $GITHUB_STEP_SUMMARY
           fi
           extraArgs=$(echo ${{ inputs.extra-args }})
           if [ ! -z "$extraArgs" ]; then
-            echo "|Extra args| `${extraArgs}` |" >> $GITHUB_STEP_SUMMARY
+            echo "|Extra args| \`${extraArgs}\` |" >> $GITHUB_STEP_SUMMARY
           fi
           releaseNotes=$(helm get notes ${{ inputs.release-name }} $namespaceHelmArg)
           if [ ! -z "$releaseNotes" ]; then
-            echo "|Release notes| `${releaseNotes}` |" >> $GITHUB_STEP_SUMMARY
+            echo "|Release notes| \`${releaseNotes}\` |" >> $GITHUB_STEP_SUMMARY
           fi
 
 
