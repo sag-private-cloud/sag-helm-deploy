@@ -21,7 +21,7 @@ Github Action for deploying (installing/upgrading) webMethods Helm Charts
   uses: sag-private-cloud/sag-helm-deploy@v3
   with: 
     release-name: "my-release"
-    helm-chart: webMethods/microservices-runtime
+    helm-chart: webMethods/microservicesruntime
     docker-registry: ${{ secrets.DOCKER_REGISTRY }}
     docker-username: ${{ secrets.DOCKER_USER }}
     docker-password: ${{ secrets.DOCKER_PASSWORD }}
