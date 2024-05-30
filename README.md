@@ -18,7 +18,7 @@ Github Action for deploying (installing/upgrading) webMethods Helm Charts
 
 ```yml
 - name: Deploy solution
-  uses: sag-private-cloud/sag-helm-deploy@v3
+  uses: wm-private-cloud/wm-helm-deploy@v3
   with: 
     release-name: "my-release"
     helm-chart: webMethods/microservicesruntime
